@@ -1,0 +1,554 @@
+/* Premium CSS Design System for Birthday Card Dashboard */
+:root {
+    --bg-mesh: linear-gradient(135deg, #0f0c20 0%, #15102a 35%, #2c163f 70%, #44184c 100%);
+    --card-pink: #ff758c;
+    --card-gold: #ffd700;
+    --text-light: #ffffff;
+    --text-dark: #333333;
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.15);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--bg-mesh);
+    background-size: 300% 300%;
+    animation: bgMovement 20s ease infinite;
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    padding: 30px 20px;
+    position: relative;
+}
+
+@keyframes bgMovement {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+
+/* Ambient glow orbs */
+.glow-orb {
+    position: absolute;
+    width: 450px;
+    height: 450px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 117, 140, 0.35) 0%, rgba(106, 76, 147, 0) 70%);
+    filter: blur(60px);
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Header & layout styling */
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+    z-index: 10;
+    user-select: none;
+}
+
+.header h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #ff6ca5;
+    text-shadow: 0 0 20px rgba(255, 108, 165, 0.4);
+    font-family: 'Outfit', sans-serif;
+}
+
+.header p {
+    font-size: 1.15rem;
+    opacity: 0.85;
+    margin-top: 5px;
+    color: #ffd8ec;
+}
+
+.dashboard-container {
+    display: flex;
+    width: 100%;
+    max-width: 1100px;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 4rem;
+    z-index: 10;
+    margin-bottom: 3rem;
+}
+
+/* 1. Realistic 3D Flipping Card */
+.card-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.birthdayCard {
+    position: relative;
+    width: 290px;
+    height: 400px;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transform: perspective(1500px) rotateX(4deg);
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-radius: 20px;
+}
+
+.birthdayCard:not(.open):hover {
+    transform: perspective(1500px) rotateX(4deg) translateY(-8px) rotateY(-5deg);
+}
+
+/* Open state card rotation */
+.birthdayCard.open {
+    transform: perspective(1500px) rotateX(4deg) rotateY(-155deg);
+}
+
+.cardFront, .cardInside {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transition: all 0.5s ease;
+}
+
+.cardFront {
+    background: linear-gradient(135deg, #ffffff 0%, #ffeaf0 100%);
+    border: 3px solid #ff7fae;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px 20px;
+    z-index: 2;
+    transform: rotateY(0deg);
+}
+
+.cardFront .front-text {
+    text-align: center;
+    width: 100%;
+}
+
+.cardFront h3.happy {
+    font-size: 1.5rem;
+    letter-spacing: 5px;
+    color: #ff60ad;
+    font-weight: 700;
+}
+
+.cardFront h2.bday {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.3rem;
+    font-weight: 800;
+    color: #d13d7a;
+    line-height: 1.1;
+    margin: 8px 0;
+}
+
+.cardFront h3.toyou {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2.1rem;
+    color: #ff60ad;
+}
+
+.cardFront .ribbon-graphic {
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, #ff7fae, transparent);
+    margin: 15px 0;
+}
+
+/* Beautiful stylized flat vector cake inside front cover */
+.front-cake-graphic {
+    width: 130px;
+    height: 130px;
+    background: radial-gradient(circle, #ffeaf2 0%, #ffcbdc 100%);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 2px dashed #ff9ebd;
+}
+
+.front-cake-graphic span {
+    font-size: 4rem;
+    filter: drop-shadow(0 4px 8px rgba(255, 105, 180, 0.4));
+    animation: bounceGraphics 3s infinite ease-in-out;
+}
+
+@keyframes bounceGraphics {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-8px) scale(1.05); }
+}
+
+.front-footer {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #a0818d;
+    font-weight: 700;
+}
+
+/* Card Inside */
+.cardInside {
+    background: #ffffff;
+    border: 2px solid #ffcbdc;
+    padding: 24px;
+    z-index: 1;
+    transform: rotateY(180deg); /* Hidden initially on flip side */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: var(--text-dark);
+}
+
+.polaroid-pic-frame {
+    background: #ffffff;
+    padding: 10px 10px 22px 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border: 1px solid #eee;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    transform: rotate(-3deg);
+    transition: transform 0.3s ease;
+}
+
+.polaroid-pic-frame:hover {
+    transform: rotate(1deg) scale(1.02);
+}
+
+.bdyboy {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 2px;
+    border: 1px solid #f6f6f6;
+}
+
+.polaroid-caption {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.3rem;
+    margin-top: 10px;
+    color: #ff4d85;
+    font-weight: 700;
+}
+
+.cardInside .wishes {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.cardInside p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #555555;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.cardInside p.signature-name {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.8rem;
+    color: #ff3c8c;
+    font-weight: 700;
+    margin-top: 12px;
+    margin-left: 100px;
+}
+
+/* 2. Polaroid Memories Lane Gallery */
+.polaroids-section {
+    flex: 1.2;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.section-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #ffa5cc;
+    margin-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
+}
+
+.polaroid-deck {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.polaroid-card {
+    width: 250px;
+    background: #ffffff;
+    padding: 18px 18px 30px;
+    box-shadow: 0 18px 35px rgba(0, 0, 0, 0.16);
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-dark);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+    transform-style: preserve-3d;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+    transform: rotate(var(--rot, 0deg));
+}
+
+.polaroid-card::after {
+    content: "";
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 14px;
+    height: 12px;
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: 50%;
+    opacity: 0.6;
+    transform: translateY(2px);
+    z-index: 0;
+}
+
+.polaroid-card:hover {
+    transform: scale(1.05) rotate(0deg) translateY(-5px);
+    box-shadow: 0 20px 45px rgba(255, 105, 180, 0.2);
+    z-index: 100;
+}
+
+.polaroid-card img.pic {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 12px;
+    background: #f7f7f7;
+    z-index: 1;
+}
+
+/* Colorful styled placeholder vectors in case no image is set */
+.polaroid-card .vector-pic {
+    width: 100%;
+    min-height: 220px;
+    border-radius: 16px;
+    background: #f9f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    padding: 8px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
+}
+
+.polaroid-card p.caption {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #4b2354;
+    margin-top: 12px;
+    text-align: center;
+}
+
+/* 3. Floating Wish Balloons Popping mini-game */
+.balloon-wishes-board {
+    width: 100%;
+    max-width: 1100px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    margin-bottom: 2rem;
+}
+
+.board-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #ff9ec7;
+    margin-bottom: 1.5rem;
+}
+
+.balloons-flex {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+}
+
+.game-balloon {
+    width: 65px;
+    height: 80px;
+    border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+    position: relative;
+    cursor: pointer;
+    box-shadow: inset -6px -8px 12px rgba(0,0,0,0.15),
+                0 6px 15px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    animation: balloonWobble 4s infinite alternate ease-in-out;
+}
+
+.game-balloon:nth-child(even) {
+    animation-delay: -2s;
+}
+
+@keyframes balloonWobble {
+    0% { transform: translateY(0) rotate(-4deg); }
+    100% { transform: translateY(-10px) rotate(4deg); }
+}
+
+.game-balloon:hover {
+    transform: scale(1.12);
+    box-shadow: inset -6px -8px 12px rgba(0,0,0,0.15),
+                0 0 25px var(--glow-color);
+}
+
+.game-balloon::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 50px;
+    background: rgba(255,255,255,0.35);
+    bottom: -50px;
+    left: 50%;
+}
+
+.game-balloon .string-knot {
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 6px solid var(--balloon-color);
+}
+
+/* Glass pop-up wish card */
+.wish-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 10, 30, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.wish-popup-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.wish-popup-card {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #ff7fae;
+    border-radius: 30px;
+    padding: 2.5rem;
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+    color: var(--text-dark);
+    box-shadow: 0 20px 50px rgba(255, 105, 180, 0.3);
+    transform: scale(0.7);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.wish-popup-overlay.show .wish-popup-card {
+    transform: scale(1);
+}
+
+.wish-popup-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    animation: popShake 0.6s ease-out;
+}
+
+@keyframes popShake {
+    0% { transform: scale(0.4) rotate(-30deg); }
+    100% { transform: scale(1) rotate(0); }
+}
+
+.wish-popup-card h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #ff3e8d;
+    margin-bottom: 12px;
+}
+
+.wish-popup-card p {
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: #555555;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+.wish-close-btn {
+    padding: 10px 24px;
+    background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+    border: none;
+    border-radius: 50px;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 118, 140, 0.4);
+    transition: all 0.3s ease;
+}
+
+.wish-close-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 118, 140, 0.6);
+}
+
+
+/* Responsiveness */
+@media screen and (max-width: 900px) {
+    .dashboard-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 3rem;
+    }
+    .card-section, .polaroids-section {
+        width: 100%;
+        max-width: 550px;
+    }
+    .polaroid-deck {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .header h1 { font-size: 2.2rem; }
+    .polaroid-deck { grid-template-columns: 1fr; }
+    .birthdayCard { width: 260px; height: 370px; }
+    .cardFront h2.bday { font-size: 1.9rem; }
+}

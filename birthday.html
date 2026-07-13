@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday My wife </title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Outfit:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <!-- GSAP for advanced animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        :root {
+            --star-bg: linear-gradient(135deg, #0f051d 0%, #1a082e 50%, #300346 100%);
+            --glass-card: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --pink-neon: #ff3e8d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Outfit', sans-serif;
+            background: var(--star-bg);
+            position: relative;
+        }
+
+        /* Fixed backgrounds / canvases layers */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        #starCanvas {
+            z-index: -1;
+        }
+
+        #fireworksCanvas {
+            z-index: 0;
+        }
+
+        #petalsCanvas {
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .hearts-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .heart {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        /* Central birthday text panel */
+        .birthday-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+            padding: 20px;
+            text-align: center;
+            pointer-events: none;
+            /* Let clicks pass to trigger fireworks directly */
+        }
+
+        .birthday-text {
+            font-family: 'Dancing Script', cursive;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 5.5rem;
+            opacity: 0;
+            white-space: normal;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.4),
+                0 0 30px rgba(255, 62, 141, 0.6);
+            margin-bottom: 1.5rem;
+            pointer-events: auto;
+            user-select: none;
+        }
+
+        .letter {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(30px) rotate(10deg);
+            filter: blur(2px);
+        }
+
+        .romantic-message {
+            background: var(--glass-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem 2.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.25rem;
+            font-weight: 300;
+            line-height: 1.6;
+            max-width: 650px;
+            width: 90%;
+            opacity: 0;
+            transform: translateY(30px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3),
+                inset 0 0 15px rgba(255, 255, 255, 0.05);
+            pointer-events: auto;
+            user-select: none;
+            margin-bottom: 2rem;
+        }
+
+        /* Elegant button controls */
+        .celebrate-button {
+            padding: 15px 40px;
+            border-radius: 50px;
+            background: linear-gradient(45deg, #ff3e8d, #ff2d69);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 1.15rem;
+            letter-spacing: 2px;
+            border: none;
+            cursor: pointer;
+            opacity: 0;
+            transform: scale(0);
+            box-shadow: 0 6px 20px rgba(255, 45, 105, 0.5),
+                0 0 35px rgba(255, 45, 105, 0.3);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto;
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .celebrate-button:hover {
+            transform: scale(1.06) translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 45, 105, 0.7),
+                0 0 45px rgba(255, 45, 105, 0.5);
+        }
+
+        .celebrate-button:active {
+            transform: scale(0.97);
+        }
+
+        .celebrate-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.3) 50%,
+                    rgba(255, 255, 255, 0) 100%);
+            transform: skewX(-25deg);
+            transition: 0.7s;
+        }
+
+        .celebrate-button:hover::after {
+            animation: shineBtn 1.5s infinite;
+        }
+
+        @keyframes shineBtn {
+            100% {
+                left: 125%;
+            }
+        }
+
+        .next-page-button {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 28px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            opacity: 0;
+            transform: translateX(30px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .next-page-button:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.22);
+            box-shadow: 0 6px 20px rgba(255, 62, 141, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Responsive Breakpoints */
+        @media screen and (max-width: 768px) {
+            .birthday-text {
+                font-size: 3.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .romantic-message {
+                font-size: 1.05rem;
+                padding: 1.25rem 1.5rem;
+            }
+
+            .celebrate-button {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Twinkling stars sky layer -->
+    <canvas id="starCanvas"></canvas>
+    <!-- Fireworks splash layer -->
+    <canvas id="fireworksCanvas"></canvas>
+    <!-- Falling rose petals layer -->
+    <canvas id="petalsCanvas"></canvas>
+
+    <!-- Floating vector hearts -->
+    <div class="hearts-container" id="heartsContainer"></div>
+
+    <!-- Central Text Content -->
+    <div class="birthday-container">
+        <h1 class="birthday-text" id="bdayTitle">Happy Birthday, chinni🧡</h1>
+
+        <p class="romantic-message" id="bdayMsg">
+            Every moment with you is a celebration, but today is especially magical. Here's to another beautiful year of
+            love, laughter, and countless glowing memories together. 💕
+        </p>
+
+        <button class="celebrate-button" id="celebrateBtn">
+            <span>✨</span>
+            <span>Celebrate your birthday</span>
+            <span>💖</span>
+        </button>
+    </div>
+
+    <!-- Redirect navigation button -->
+    <button class="next-page-button" id="nextPageBtn">Cake Cutting &rarr;</button>
+
+    <!-- Import our continuous shared music script -->
+    <script src="music.js"></script>
+
+    <script>
+        // Set canvas rendering bounds
+        const starCanvas = document.getElementById('starCanvas');
+        const starCtx = starCanvas.getContext('2d');
+        const fireworksCanvas = document.getElementById('fireworksCanvas');
+        const fireworksCtx = fireworksCanvas.getContext('2d');
+        const petalsCanvas = document.getElementById('petalsCanvas');
+        const petalsCtx = petalsCanvas.getContext('2d');
+        const heartsContainer = document.getElementById('heartsContainer');
+
+        function resizeCanvas() {
+            starCanvas.width = window.innerWidth;
+            starCanvas.height = window.innerHeight;
+            fireworksCanvas.width = window.innerWidth;
+            fireworksCanvas.height = window.innerHeight;
+            petalsCanvas.width = window.innerWidth;
+            petalsCanvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // 1. Star field class
+        class Star {
+            constructor() {
+                this.reset();
+                this.y = Math.random() * starCanvas.height;
+            }
+
+            reset() {
+                this.x = Math.random() * starCanvas.width;
+                this.y = 0;
+                this.size = Math.random() * 1.8 + 0.4;
+                this.speed = Math.random() * 0.03 + 0.005;
+                this.twinkleSpeed = Math.random() * 0.05 + 0.01;
+                this.opacity = Math.random() * 0.7 + 0.2;
+                this.growing = Math.random() > 0.5;
+            }
+
+            update() {
+                // Subtle horizontal drift and slow twinkling
+                if (this.growing) {
+                    this.opacity += this.twinkleSpeed;
+                    if (this.opacity >= 0.95) this.growing = false;
+                } else {
+                    this.opacity -= this.twinkleSpeed;
+                    if (this.opacity <= 0.15) this.growing = true;
+                }
+
+                this.y += this.speed;
+                if (this.y > starCanvas.height) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                starCtx.beginPath();
+                starCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                starCtx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                starCtx.fill();
+
+                // Soft glowing aura for larger stars
+                if (this.size > 1.2) {
+                    const glow = starCtx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 5);
+                    glow.addColorStop(0, `rgba(255, 105, 180, ${this.opacity * 0.4})`);
+                    glow.addColorStop(1, 'rgba(0,0,0,0)');
+                    starCtx.fillStyle = glow;
+                    starCtx.beginPath();
+                    starCtx.arc(this.x, this.y, this.size * 5, 0, Math.PI * 2);
+                    starCtx.fill();
+                }
+            }
+        }
+
+        // 2. Petal drift class
+        class Petal {
+            constructor() {
+                this.reset();
+                this.y = Math.random() * petalsCanvas.height;
+            }
+
+            reset() {
+                this.x = Math.random() * petalsCanvas.width;
+                this.y = -30;
+                this.size = Math.random() * 16 + 8;
+                this.speedY = Math.random() * 0.9 + 0.4;
+                this.speedX = Math.random() * 1.5 - 0.75;
+                this.rot = Math.random() * 360;
+                this.rotSpeed = Math.random() * 1.5 - 0.75;
+                this.opacity = Math.random() * 0.45 + 0.55;
+                this.hue = Math.random() * 20 + 340; // Soft beautiful rose pinks
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += Math.sin(this.y * 0.015) * 0.8 + this.speedX;
+                this.rot += this.rotSpeed;
+
+                if (this.y > petalsCanvas.height + 20) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                petalsCtx.save();
+                petalsCtx.translate(this.x, this.y);
+                petalsCtx.rotate(this.rot * Math.PI / 180);
+                petalsCtx.globalAlpha = this.opacity;
+
+                // Vector rose petal drawing
+                petalsCtx.beginPath();
+                petalsCtx.moveTo(0, 0);
+                petalsCtx.bezierCurveTo(this.size / 2, -this.size / 3, this.size, -this.size / 3, 0, -this.size);
+                petalsCtx.bezierCurveTo(-this.size, -this.size / 3, -this.size / 2, -this.size / 3, 0, 0);
+
+                const gradient = petalsCtx.createLinearGradient(0, 0, 0, -this.size);
+                gradient.addColorStop(0, `hsl(${this.hue}, 100%, 65%)`);
+                gradient.addColorStop(1, `hsl(${this.hue - 20}, 95%, 45%)`);
+
+                petalsCtx.fillStyle = gradient;
+                petalsCtx.shadowBlur = 4;
+                petalsCtx.shadowColor = 'rgba(0,0,0,0.15)';
+                petalsCtx.fill();
+                petalsCtx.restore();
+            }
+        }
+
+        // 3. Fireworks classes
+        class Spark {
+            constructor(x, y, hue) {
+                this.x = x;
+                this.y = y;
+                this.hue = hue;
+                this.size = Math.random() * 2.8 + 0.8;
+                this.angle = Math.random() * Math.PI * 2;
+                this.speed = Math.random() * 6 + 1.5;
+                this.friction = 0.96;
+                this.gravity = 0.07;
+                this.opacity = 1;
+                this.fade = Math.random() * 0.015 + 0.01;
+            }
+
+            update() {
+                this.speed *= this.friction;
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed + this.gravity;
+                this.opacity -= this.fade;
+            }
+
+            draw() {
+                fireworksCtx.save();
+                fireworksCtx.globalAlpha = this.opacity;
+                fireworksCtx.shadowBlur = 6;
+                fireworksCtx.shadowColor = `hsl(${this.hue}, 100%, 60%)`;
+                fireworksCtx.fillStyle = `hsl(${this.hue}, 100%, 75%)`;
+                fireworksCtx.beginPath();
+                fireworksCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                fireworksCtx.fill();
+                fireworksCtx.restore();
+            }
+        }
+
+        class Firework {
+            constructor(startX, destinationY) {
+                this.x = startX || Math.random() * fireworksCanvas.width;
+                this.y = fireworksCanvas.height;
+                this.destinationY = destinationY || Math.random() * (fireworksCanvas.height * 0.55);
+                this.speed = Math.random() * 5 + 7;
+                this.exploded = false;
+                this.sparks = [];
+                this.hue = Math.random() * 360;
+                this.trail = [];
+            }
+
+            update() {
+                if (!this.exploded) {
+                    this.y -= this.speed;
+                    this.trail.push({ x: this.x, y: this.y, opacity: 1 });
+                    if (this.trail.length > 8) this.trail.shift();
+
+                    if (this.y <= this.destinationY) {
+                        this.exploded = true;
+                        this.explode();
+                    }
+                } else {
+                    for (let i = 0; i < this.sparks.length; i++) {
+                        this.sparks[i].update();
+                        if (this.sparks[i].opacity <= 0) {
+                            this.sparks.splice(i, 1);
+                            i--;
+                        }
+                    }
+                }
+            }
+
+            explode() {
+                const count = Math.floor(Math.random() * 40) + 60;
+                for (let i = 0; i < count; i++) {
+                    this.sparks.push(new Spark(this.x, this.y, this.hue));
+                }
+            }
+
+            draw() {
+                if (!this.exploded) {
+                    // Draw fading flight trail
+                    this.trail.forEach((t, i) => {
+                        fireworksCtx.beginPath();
+                        fireworksCtx.arc(t.x, t.y, 2, 0, Math.PI * 2);
+                        fireworksCtx.fillStyle = `rgba(255, 230, 100, ${(i + 1) / this.trail.length})`;
+                        fireworksCtx.fill();
+                    });
+                } else {
+                    this.sparks.forEach(s => s.draw());
+                }
+            }
+        }
+
+        // Heart-shaped vector canvas explosion
+        class HeartFirework extends Firework {
+            explode() {
+                const totalPoints = 80;
+                this.hue = Math.random() * 25 + 340; // Vibrant red/pink
+
+                for (let i = 0; i < totalPoints; i++) {
+                    const angle = (i / totalPoints) * Math.PI * 2;
+                    // Formula for standard cardioid shape
+                    const hx = 16 * Math.pow(Math.sin(angle), 3);
+                    const hy = -(13 * Math.cos(angle) - 5 * Math.cos(2 * angle) - 2 * Math.cos(3 * angle) - Math.cos(4 * angle));
+
+                    const spark = new Spark(this.x, this.y, this.hue);
+                    spark.angle = Math.atan2(hy, hx);
+                    // Velocity proportional to heart profile bounds
+                    spark.speed = Math.sqrt(hx * hx + hy * hy) * 0.28 * (Math.random() * 0.3 + 0.85);
+                    this.sparks.push(spark);
+                }
+            }
+        }
+
+        // Generate systems lists
+        const stars = Array.from({ length: 120 }, () => new Star());
+        const petals = Array.from({ length: 45 }, () => new Petal());
+        const fireworks = [];
+
+        function addFirework(customX, customY, isHeart = false) {
+            if (isHeart || Math.random() < 0.35) {
+                fireworks.push(new HeartFirework(customX, customY));
+            } else {
+                fireworks.push(new Firework(customX, customY));
+            }
+        }
+
+        // 4. Render loops
+        function animate() {
+            // Star canvas render
+            starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+            stars.forEach(s => { s.update(); s.draw(); });
+
+            // Petals canvas render
+            petalsCtx.clearRect(0, 0, petalsCanvas.width, petalsCanvas.height);
+            petals.forEach(p => { p.update(); p.draw(); });
+
+            // Fireworks canvas render
+            fireworksCtx.fillStyle = 'rgba(15, 5, 29, 0.2)'; // Fades firework streaks slowly
+            fireworksCtx.fillRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+
+            for (let i = 0; i < fireworks.length; i++) {
+                fireworks[i].update();
+                fireworks[i].draw();
+                if (fireworks[i].exploded && fireworks[i].sparks.length === 0) {
+                    fireworks.splice(i, 1);
+                    i--;
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // Spawn standard automatic fireworks periodically
+        let autoFireworkInterval = setInterval(() => {
+            if (document.hidden) return;
+            addFirework();
+        }, 1200);
+
+        // Click handler to manually launch fireworks on background
+        window.addEventListener('click', (e) => {
+            // Only fire if not clicking interactive UI buttons
+            if (e.target.tagName !== 'BUTTON' && !e.target.closest('#birthdayMusicController')) {
+                addFirework(e.clientX, e.clientY);
+            }
+        });
+
+        // HTML heart generation helper
+        function addFloatingHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.style.left = `${Math.random() * 80 + 10}%`;
+            heart.style.top = `${Math.random() * 70 + 15}%`;
+            heart.innerHTML = `
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" 
+                          fill="rgba(255, 60, 140, ${Math.random() * 0.35 + 0.6})"/>
+                </svg>
+            `;
+            heartsContainer.appendChild(heart);
+
+            gsap.to(heart, {
+                opacity: 1,
+                scale: 1,
+                duration: 0.6,
+                ease: "back.out(1.5)",
+                onComplete: () => {
+                    gsap.to(heart, {
+                        y: -140 - Math.random() * 100,
+                        x: (Math.random() - 0.5) * 80,
+                        opacity: 0,
+                        rotation: Math.random() * 70 - 35,
+                        scale: 0.5,
+                        duration: 3 + Math.random() * 3,
+                        ease: "power2.out",
+                        onComplete: () => heart.remove()
+                    });
+                }
+            });
+        }
+
+        // Initialize animations on load
+        window.addEventListener('load', () => {
+            animate();
+
+            // GSAP Sequence: Split Title text into gorgeous staggered waves
+            const bdayTitle = document.getElementById('bdayTitle');
+            const loveName = localStorage.getItem('birthday_love_name') || 'Dpi🧡';
+            bdayTitle.textContent = `Happy Birthday, ${loveName}`;
+            
+            const titleText = bdayTitle.textContent;
+            bdayTitle.textContent = '';
+
+            for (let i = 0; i < titleText.length; i++) {
+                const charNode = document.createElement('span');
+                charNode.textContent = titleText[i] === ' ' ? '\u00A0' : titleText[i];
+                charNode.className = 'letter';
+                bdayTitle.appendChild(charNode);
+            }
+
+            const letterNodes = document.querySelectorAll('.letter');
+
+            // GSAP timeline sequence
+            const tl = gsap.timeline({ delay: 0.5 });
+
+            tl.to(bdayTitle, { opacity: 1, duration: 0.1 })
+                .to(letterNodes, {
+                    opacity: 1,
+                    y: 0,
+                    rotation: 0,
+                    filter: "none",
+                    stagger: 0.05,
+                    duration: 0.8,
+                    ease: "back.out(1.7)"
+                })
+                .to(bdayTitle, {
+                    textShadow: "0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 62, 141, 0.7)",
+                    duration: 1.2
+                }, "-=0.3")
+                .to('#bdayMsg', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    ease: "power2.out"
+                }, "-=0.8")
+                .to('#celebrateBtn', {
+                    opacity: 1,
+                    scale: 1,
+                    duration: 0.8,
+                    ease: "elastic.out(1, 0.3)"
+                }, "-=0.5")
+                .to('#nextPageBtn', {
+                    opacity: 1,
+                    x: 0,
+                    duration: 0.8,
+                    ease: "back.out(1.5)"
+                }, "-=0.3");
+
+            // Celebrate Button click interaction
+            const celebrateBtn = document.getElementById('celebrateBtn');
+            celebrateBtn.addEventListener('click', () => {
+                // Visual bounce
+                gsap.to(celebrateBtn, {
+                    scale: 0.94,
+                    duration: 0.15,
+                    yoyo: true,
+                    repeat: 1
+                });
+
+                // Explode massive batch of fireworks
+                for (let i = 0; i < 6; i++) {
+                    setTimeout(() => {
+                        const randomX = Math.random() * window.innerWidth;
+                        const randomY = Math.random() * (window.innerHeight * 0.45) + window.innerHeight * 0.1;
+                        addFirework(randomX, randomY, true);
+                    }, i * 220);
+                }
+
+                // Burst html floating hearts
+                for (let i = 0; i < 12; i++) {
+                    setTimeout(addFloatingHeart, i * 80);
+                }
+            });
+
+            // Redirect button action
+            document.getElementById('nextPageBtn').addEventListener('click', () => {
+                gsap.to(document.body, {
+                    opacity: 0,
+                    duration: 0.5,
+                    onComplete: () => {
+                        window.location.href = "cake.html";
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
